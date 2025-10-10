@@ -24,7 +24,7 @@ Add recipe ingredients directly to your personal shopping list.
 
 ## Live Demo
 
-[View Live Project](link)
+[View Live Project](https://jericho066.github.io/dishlyst/)
 
 ## Features
 - Search recipes by name or ingredients
