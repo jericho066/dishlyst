@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import logoImage from './assets/logo.png';
 
 // Mock API functions
 const searchRecipes = async (query) => {
@@ -293,7 +294,7 @@ function App() {
           <div className="header-content">
 
             <div className='logo'>
-              <img src="src/assets/logo.png" alt=""  />
+              <img src={logoImage} alt=""  />
             </div>
                         
             <form 
