@@ -293,7 +293,7 @@ function App() {
           <div className="header-content">
 
             <div className='logo'>
-              <img src="/logo.png" alt=""  />
+              <img src="src/assets/logo.png" alt=""  />
             </div>
                         
             <form 
