@@ -8,17 +8,17 @@ Dishlyst is a modern web app that lets users discover, save, and organize recipe
 ### Search Recipes
 Find dishes easily by typing keywords or ingredients.
 
-<img src="screenshots/1.png" width="800" style="border-radius: 8px">
+<img src="screenshots/1.png" width="800" style="border-radius: 8px;">
 
 ### Save Favorites
 Bookmark your favorite meals to access them later.
 
-<img src="screenshots/2.png" width="800" style="border-radius: 8px">
+<img src="screenshots/2.png" width="800" style="border-radius: 8px;">
 
 ### Save Shopping List
 Add recipe ingredients directly to your personal shopping list.
 
-<img src="screenshots/3.png" width="800" style="border-radius: 8px">
+<img src="screenshots/3.png" width="800" style="border-radius: 8px;">
 
 
 
