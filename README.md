@@ -1,10 +1,10 @@
-# Dishlyst – Recipe Finder & Meal Planner
+## Dishlyst – Recipe Finder & Meal Planner
 
-Dishlyst is a modern web app that lets users discover, save, and organize recipes. You can search by ingredients, cuisine, or category, then save your favorite meals and automatically build a shopping list — all in one place.
+Dishlyst is a modern web app that lets users discover, save, and organize recipes. You can search by ingredients, cuisine, or category, then save your favorite meals and automatically build a shopping list all in one place.
 
 ## Demo
 
-### Screenshots
+### - Screenshots
 
 #### Search Recipes
 Find dishes easily by typing keywords or ingredients.
@@ -23,7 +23,7 @@ Add recipe ingredients directly to your personal shopping list.
 
 
 
-### Live Demo
+### - Live Demo
 
 [View Live Demo](https://jericho066.github.io/dishlyst/)
 
@@ -76,10 +76,4 @@ All recipe data is fetched from [TheMealDB API](https://www.themealdb.com/api.ph
 - filter.php?a=
 - lookup.php?i=
 - random.php
-
-## Future Improvements
-- User accounts and cloud-based favorites
-- Print-friendly recipe view
-- Dark mode toggle
-- Recipe difficulty/time estimates from user input
 
