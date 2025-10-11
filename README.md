@@ -4,7 +4,7 @@ Dishlyst is a modern web app that lets users discover, save, and organize recipe
 
 ## Demo
 
-### - Screenshots
+### Screenshots
 
 #### Search Recipes
 Find dishes easily by typing keywords or ingredients.
@@ -23,7 +23,7 @@ Add recipe ingredients directly to your personal shopping list.
 
 
 
-### - Live Demo
+### Live Demo
 
 [View Live Demo](https://jericho066.github.io/dishlyst/)
 

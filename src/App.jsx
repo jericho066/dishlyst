@@ -495,12 +495,23 @@ function RecipeDetailPage({ recipe, loading, onClose, isFavorite, onToggleFavori
     const ingredientCount = ingredients.length
     const stepCount = instructions.length
 
+    //* calculating the difficulty base on the lengths on ingridients and intructions.
+    //! it might not be accurate if the the intructions provided are too short.
     const complexityScore = ingredientCount + (stepCount * 2)
 
-    if (complexityScore < 20) return "Easy"
-    if (complexityScore < 35) return "Medium"
+    if (complexityScore < 20) {
+      return "Easy"
+    }
+    if (complexityScore < 35) {
+      return "Medium"
+    }
     return "Hard"
   }
+
+
+  const prepTime = calculatePrepTime()
+  const servings = calculateServings()
+  const difficulty = calculateDifficulty()
 
 
   //* Print functionality
@@ -521,11 +532,13 @@ function RecipeDetailPage({ recipe, loading, onClose, isFavorite, onToggleFavori
             padding: 20px;
             line-height: 1.6;
           }
+
           h1 {
             color: #ea580c;
             border-bottom: 3px solid #ea580c;
             padding-bottom: 10px;
           }
+
           .meta {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -548,12 +561,21 @@ function RecipeDetailPage({ recipe, loading, onClose, isFavorite, onToggleFavori
             color: #111827;
             margin-top: 5px;
           }
+
+          .imgContainer {
+            width: 100%;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+
           img {
-            max-width: 100%;
+            max-width: 90%;
             height: auto;
             border-radius: 8px;
-            margin: 20px 0;
           }
+
           h2 {
             color: #111827;
             margin-top: 30px;
@@ -563,19 +585,23 @@ function RecipeDetailPage({ recipe, loading, onClose, isFavorite, onToggleFavori
             align-items: center;
             gap: 8px;
           }
+
           ul, ol {
             margin: 15px 0;
             padding-left: 25px;
           }
+
           li {
             margin: 8px 0;
           }
+
           .tags {
             margin: 15px 0;
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
           }
+            
           .tag {
             display: inline-block;
             background: #fef3c7;
@@ -586,6 +612,7 @@ function RecipeDetailPage({ recipe, loading, onClose, isFavorite, onToggleFavori
             border-radius: 20px;
             font-size: 0.9em;
           }
+
           @media print {
             body {
               margin: 0;
@@ -617,25 +644,27 @@ function RecipeDetailPage({ recipe, loading, onClose, isFavorite, onToggleFavori
           ).join('') : ''}
         </div>
 
-        <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}" />
+        <div class="imgContainer">
+          <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}" />
+        </div>
         
         <div class="meta">
           <div class="meta-item">
             <div class="meta-icon"><i class="bi bi-stopwatch"></i></div>
             <div class="meta-label">Prep Time</div>
-            <div class="meta-value">${calculatePrepTime()} min</div>
+            <div class="meta-value">${prepTime} min</div>
           </div>
 
           <div class="meta-item">
             <div class="meta-icon"><i class="bi bi-people"></i></div>
             <div class="meta-label">Servings</div>
-            <div class="meta-value">${calculateServings()}</div>
+            <div class="meta-value">${servings}</div>
           </div>
 
           <div class="meta-item">
             <div class="meta-icon"><i class="bi bi-bar-chart"></i></div>
             <div class="meta-label">Difficulty</div>
-            <div class="meta-value">${calculateDifficulty()}</div>
+            <div class="meta-value">${difficulty}</div>
           </div>
         </div>
 
@@ -679,10 +708,6 @@ function RecipeDetailPage({ recipe, loading, onClose, isFavorite, onToggleFavori
 
   }
 
-
-  const prepTime = calculatePrepTime()
-  const servings = calculateServings()
-  const difficulty = calculateDifficulty()
 
 
   return (
