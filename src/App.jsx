@@ -134,6 +134,19 @@ function App() {
     setLoading(false)
   }
 
+  const refreshRecipes = async () => {
+    //* to clear search and filters
+    setSearchQuery("")
+    setFilters({ category: "", area: "" })
+
+    await loadRandomRecipes()
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    })
+  }
+
   const handleSearch = async () => {
     setLoading(true)
     const data = await searchRecipes(searchQuery)
@@ -178,6 +191,13 @@ function App() {
   const openRecipeDetail = async (recipeId) => {
     setRecipeDetailLoading(true)
     setSelectedRecipe(null)
+
+    //* Scroll to top when opening recipe
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    })
+
     const recipe = await getRecipeById(recipeId)
     setSelectedRecipe(recipe)
     setRecipeDetailLoading(false)
@@ -293,7 +313,7 @@ function App() {
         <div className="container">
           <div className="header-content">
 
-            <div className='logo'>
+            <div className='logo' >
               <img src={logoImage} alt=""  />
             </div>
                         
@@ -381,6 +401,7 @@ function App() {
               onRecipeClick={openRecipeDetail}
               isFavorite={isFavorite}
               onToggleFavorite={toggleFavorite}
+              onRefresh={refreshRecipes}
             />
           ) : currentPage === 'favorites' ? (
             <FavoritesPage 
@@ -444,6 +465,226 @@ function RecipeDetailPage({ recipe, loading, onClose, isFavorite, onToggleFavori
   //* split instructions into steps
   const instructions = recipe.strInstructions.split("\n").filter(step => step.trim().length > 0)
 
+
+  //* Calculate metadata based on recipe complexity
+  const calculatePrepTime = () => {
+    const baseTime = 15
+    const ingredientTime = ingredients.length *2
+    const instructionTime = instructions.length * 5
+    const totalMinutes = baseTime + ingredientTime + instructionTime
+
+    return Math.round(totalMinutes / 5) * 5
+  }
+
+
+  const calculateServings = () => {
+    
+    const seedRandom = (seed) => {
+      const x = Math.sin(seed) * 1000
+      return x - Math.floor(x)
+    }
+
+    const resipeId = parseInt(recipe.idMeal)
+    const randomFactor = seedRandom(resipeId)
+
+    //* using recipe ID for consistent randomness
+    return Math.floor(randomFactor * 4) + 3
+  }
+
+  const calculateDifficulty = () => {
+    const ingredientCount = ingredients.length
+    const stepCount = instructions.length
+
+    const complexityScore = ingredientCount + (stepCount * 2)
+
+    if (complexityScore < 20) return "Easy"
+    if (complexityScore < 35) return "Medium"
+    return "Hard"
+  }
+
+
+  //* Print functionality
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank')
+    
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${recipe.strMeal} - Recipe</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+          }
+          h1 {
+            color: #ea580c;
+            border-bottom: 3px solid #ea580c;
+            padding-bottom: 10px;
+          }
+          .meta {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 8px;
+          }
+          .meta-item {
+            text-align: center;
+          }
+          .meta-label {
+            font-weight: bold;
+            color: #6b7280;
+            font-size: 0.9em;
+          }
+          .meta-value {
+            font-size: 1.2em;
+            color: #111827;
+            margin-top: 5px;
+          }
+          img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 20px 0;
+          }
+          h2 {
+            color: #111827;
+            margin-top: 30px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+          ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+          }
+          li {
+            margin: 8px 0;
+          }
+          .tags {
+            margin: 15px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+          }
+          .tag {
+            display: inline-block;
+            background: #fef3c7;
+            align-items: center;
+            gap: 5px;
+            color: #92400e;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+          }
+          @media print {
+            body {
+              margin: 0;
+              padding: 15px;
+            }
+            button {
+              display: none;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <h1>${recipe.strMeal}</h1>
+        
+        <div class="tags">
+
+          <span class="tag">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" className="bi bi-fork-knife" viewBox="0 0 16 16">
+              <path d="M13 .5c0-.276-.226-.506-.498-.465-1.703.257-2.94 2.012-3 8.462a.5.5 0 0 0 .498.5c.56.01 1 .13 1 1.003v5.5a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5zM4.25 0a.25.25 0 0 1 .25.25v5.122a.128.128 0 0 0 .256.006l.233-5.14A.25.25 0 0 1 5.24 0h.522a.25.25 0 0 1 .25.238l.233 5.14a.128.128 0 0 0 .256-.006V.25A.25.25 0 0 1 6.75 0h.29a.5.5 0 0 1 .498.458l.423 5.07a1.69 1.69 0 0 1-1.059 1.711l-.053.022a.92.92 0 0 0-.58.884L6.47 15a.971.971 0 1 1-1.942 0l.202-6.855a.92.92 0 0 0-.58-.884l-.053-.022a1.69 1.69 0 0 1-1.059-1.712L3.462.458A.5.5 0 0 1 3.96 0z"/>
+            </svg>  
+          ${recipe.strCategory}
+          </span>
+
+          <span class="tag">
+            <i class="bi bi-globe-americas"></i> ${recipe.strArea}
+          </span>
+          ${recipe.strTags ? recipe.strTags.split(',').map(tag => 
+            `<span class="tag">${tag.trim()}</span>`
+          ).join('') : ''}
+        </div>
+
+        <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}" />
+        
+        <div class="meta">
+          <div class="meta-item">
+            <div class="meta-icon"><i class="bi bi-stopwatch"></i></div>
+            <div class="meta-label">Prep Time</div>
+            <div class="meta-value">${calculatePrepTime()} min</div>
+          </div>
+
+          <div class="meta-item">
+            <div class="meta-icon"><i class="bi bi-people"></i></div>
+            <div class="meta-label">Servings</div>
+            <div class="meta-value">${calculateServings()}</div>
+          </div>
+
+          <div class="meta-item">
+            <div class="meta-icon"><i class="bi bi-bar-chart"></i></div>
+            <div class="meta-label">Difficulty</div>
+            <div class="meta-value">${calculateDifficulty()}</div>
+          </div>
+        </div>
+
+        <h2><i class="bi bi-cart3"></i> Ingredients</h2>
+        <ul>
+          ${ingredients.map(item => 
+            `<li>${item.measure} ${item.ingredient}</li>`
+          ).join('')}
+        </ul>
+
+        <h2><i class="bi bi-pencil-square"></i> Instructions</h2>
+        <ol>
+          ${instructions.map(step => 
+            `<li>${step}</li>`
+          ).join('')}
+        </ol>
+
+        ${recipe.strYoutube ? `
+          <h2><i class="bi bi-camera-reels"></i> Video Tutorial</h2>
+          <p><a href="${recipe.strYoutube}" target="_blank">${recipe.strYoutube}</a></p>
+        ` : ''}
+
+        <hr style="margin-top: 40px; border: none; border-top: 1px solid #e5e7eb;">
+        <p style="text-align: center; color: #6b7280; font-size: 0.9em;">
+          Printed from Dishlyst - Recipe Finder<br>
+          ${new Date().toLocaleDateString()}
+        </p>
+      </body>
+      </html>
+    `
+    
+    printWindow.document.write(printContent)
+    printWindow.document.close()
+    
+    //* Wait for images to load before printing
+    printWindow.onload = () => {
+      setTimeout(() => {
+        printWindow.print()
+      }, 250)
+    }
+
+  }
+
+
+  const prepTime = calculatePrepTime()
+  const servings = calculateServings()
+  const difficulty = calculateDifficulty()
+
+
   return (
     <div className="recipe-detail">
 
@@ -472,7 +713,7 @@ function RecipeDetailPage({ recipe, loading, onClose, isFavorite, onToggleFavori
           <div className="recipe-detail-tags">
             <span className="recipe-detail-tag">
 
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-fork-knife" viewBox="0 0 16 16">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" className="bi bi-fork-knife" viewBox="0 0 16 16">
                 <path d="M13 .5c0-.276-.226-.506-.498-.465-1.703.257-2.94 2.012-3 8.462a.5.5 0 0 0 .498.5c.56.01 1 .13 1 1.003v5.5a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5zM4.25 0a.25.25 0 0 1 .25.25v5.122a.128.128 0 0 0 .256.006l.233-5.14A.25.25 0 0 1 5.24 0h.522a.25.25 0 0 1 .25.238l.233 5.14a.128.128 0 0 0 .256-.006V.25A.25.25 0 0 1 6.75 0h.29a.5.5 0 0 1 .498.458l.423 5.07a1.69 1.69 0 0 1-1.059 1.711l-.053.022a.92.92 0 0 0-.58.884L6.47 15a.971.971 0 1 1-1.942 0l.202-6.855a.92.92 0 0 0-.58-.884l-.053-.022a1.69 1.69 0 0 1-1.059-1.712L3.462.458A.5.5 0 0 1 3.96 0z"/>
               </svg>
 
@@ -504,7 +745,7 @@ function RecipeDetailPage({ recipe, loading, onClose, isFavorite, onToggleFavori
             </div>
 
             <div className="meta-label">Prep Time</div>
-            <div className="meta-value">30 min</div>
+            <div className="meta-value">{prepTime} min</div>
           </div>
 
           <div className="meta-item">
@@ -515,7 +756,7 @@ function RecipeDetailPage({ recipe, loading, onClose, isFavorite, onToggleFavori
             </div>
 
             <div className="meta-label">Servings</div>
-            <div className="meta-value">4</div>
+            <div className="meta-value">{servings}</div>
           </div>
 
           <div className="meta-item">
@@ -526,7 +767,7 @@ function RecipeDetailPage({ recipe, loading, onClose, isFavorite, onToggleFavori
             </div>
 
             <div className="meta-label">Difficulty</div>
-            <div className="meta-value">Medium</div>
+            <div className="meta-value">{difficulty}</div>
           </div>
 
         </div>
@@ -590,7 +831,7 @@ function RecipeDetailPage({ recipe, loading, onClose, isFavorite, onToggleFavori
             <i className="bi bi-cart3"></i> Add to Shopping List
           </button>
 
-          <button className="action-button">
+          <button className="action-button" onClick={handlePrint}>
             <i className="bi bi-printer"></i> Print Recipe
           </button>
 
@@ -741,7 +982,7 @@ function RecipeCard({recipe, onClick, isFavorite, onToggleFavorite}) {
             <span>
 
               {/*!! using svg on this icon (fork and knife), because for some reason the web font doesn't work for this icon in Bootstrap  */}
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-fork-knife" viewBox="0 0 16 16">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" className="bi bi-fork-knife" viewBox="0 0 16 16">
                 <path d="M13 .5c0-.276-.226-.506-.498-.465-1.703.257-2.94 2.012-3 8.462a.5.5 0 0 0 .498.5c.56.01 1 .13 1 1.003v5.5a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5zM4.25 0a.25.25 0 0 1 .25.25v5.122a.128.128 0 0 0 .256.006l.233-5.14A.25.25 0 0 1 5.24 0h.522a.25.25 0 0 1 .25.238l.233 5.14a.128.128 0 0 0 .256-.006V.25A.25.25 0 0 1 6.75 0h.29a.5.5 0 0 1 .498.458l.423 5.07a1.69 1.69 0 0 1-1.059 1.711l-.053.022a.92.92 0 0 0-.58.884L6.47 15a.971.971 0 1 1-1.942 0l.202-6.855a.92.92 0 0 0-.58-.884l-.053-.022a1.69 1.69 0 0 1-1.059-1.712L3.462.458A.5.5 0 0 1 3.96 0z"/>
               </svg>
 
@@ -771,7 +1012,7 @@ function RecipeCard({recipe, onClick, isFavorite, onToggleFavorite}) {
 
 
 // Page Components
-function SearchPage({recipes, loading, searchQuery, filters, setFilters, clearFilters, hasActiveFilters, onRecipeClick, isFavorite, onToggleFavorite}) {
+function SearchPage({recipes, loading, searchQuery, filters, setFilters, clearFilters, hasActiveFilters, onRecipeClick, isFavorite, onToggleFavorite, onRefresh}) {
   return (
     <div>
       {/* Filters */}
@@ -800,6 +1041,18 @@ function SearchPage({recipes, loading, searchQuery, filters, setFilters, clearFi
             {loading ? 'Searching...' : `${recipes.length} recipes found`}
           </p>
         </div>
+
+        {/* Refresh Button */}
+        {!searchQuery && !filters.category && !filters.area && (
+          <button
+            className='refresh-button'
+            onClick={onRefresh}
+            disabled={loading}
+            title='Load new random recipes'
+          >
+            <i className="bi bi-arrow-clockwise"></i> Refresh Recipes
+          </button>
+        )}
       </div>
 
       {/* Loading State */}
