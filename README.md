@@ -1,30 +1,31 @@
-## Dishlyst – Recipe Finder & Meal Planner
+# Dishlyst – Recipe Finder & Meal Planner
 
 Dishlyst is a modern web app that lets users discover, save, and organize recipes. You can search by ingredients, cuisine, or category, then save your favorite meals and automatically build a shopping list — all in one place.
 
+## Demo
 
-## Screenshots
+### Screenshots
 
-### Search Recipes
+#### Search Recipes
 Find dishes easily by typing keywords or ingredients.
 
-<img src="screenshots/1.png" width="800" style="border-radius: 8px;">
+<img src="screenshots/1.png" width="800" >
 
-### Save Favorites
+#### Save Favorites
 Bookmark your favorite meals to access them later.
 
-<img src="screenshots/2.png" width="800" style="border-radius: 8px;">
+<img src="screenshots/2.png" width="800" >
 
-### Save Shopping List
+#### Save Shopping List
 Add recipe ingredients directly to your personal shopping list.
 
-<img src="screenshots/3.png" width="800" style="border-radius: 8px;">
+<img src="screenshots/3.png" width="800" >
 
 
 
-## Live Demo
+### Live Demo
 
-[View Live Project](https://jericho066.github.io/dishlyst/)
+[View Live Demo](https://jericho066.github.io/dishlyst/)
 
 ## Features
 - Search recipes by name or ingredients
@@ -40,13 +41,13 @@ Add recipe ingredients directly to your personal shopping list.
 - Styling: Custom CSS (with Bootstrap Icons)
 - API: TheMealDB API
 - Storage: Browser localStorage
-- Deployment: GitHub Pages or Netlify
+- Deployment: GitHub Pages
 
 ## Setup & Installation
 
 ### 1. Clone the  repository
 ```bash
-git clone https://github.com/yourusername/dishlyst.git
+git clone https://github.com/jericho066/dishlyst.git
 cd dishlyst
 ```
 
