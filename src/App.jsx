@@ -42,6 +42,7 @@ const getRecipeById = async (id) => {
   return data.meals ? data.meals[0] : null
 }
 
+
 //* LocalStorage helpers
 const FAVORITES_KEY = 'dishlyst-favorites'
 
@@ -68,6 +69,63 @@ const saveShoppingListToStorage = (items) => {
 }
 
 
+function Toast({ message, type = "success", onClose }) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose()
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [onClose])
+
+  const icons = {
+    success: 'bi-check-circle-fill',
+    info: 'bi-info-circle-fill',
+    warning: 'bi-exclamation-triangle-fill',
+    error: 'bi-x-circle-fill'
+  }
+
+  const colors = {
+    success: '#10b981',
+    info: '#3b82f6',
+    warning: '#f59e0b',
+    error: '#ef4444'
+  }
+
+  return (
+    <div
+      className='toast'
+      style={{
+        borderLeft: `4px solid ${colors[type]}`
+      }}
+    >
+      <i className={`bi ${icons[type]}`} style={{ color: colors[type] }}></i>
+      <span className='toast-message'>{message}</span>
+
+      <button className='toast-close' onClick={onClose}>
+        <i className='bi bi-x'></i>
+      </button>
+    </div>
+  )
+
+}
+
+function ToastContainer({ toasts, removeToast }) {
+  if(toasts.length === 0) return null
+
+  return (
+    <div className="toast-container">
+      {toasts.map(toast => (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          type={toast.type}
+          onClose={() => removeToast(toast.id)}
+        />
+      ))}
+    </div>
+  )
+}
 
 
 function App() {
@@ -81,6 +139,7 @@ function App() {
   const [recipeDetailLoading, setRecipeDetailLoading] = useState(false)
   const [favorites, setFavorites] = useState([])
   const [shoppingList, setShoppingList] = useState([])
+  const [toasts, setToasts] = useState([])
 
   //* to load favorites, shopping list, and recipes from localStorage on mount
   useEffect(() => {
@@ -207,6 +266,7 @@ function App() {
     setSelectedRecipe(null)
   }
 
+
   //* Favorites functions
   const toggleFavorite = (recipe) => {
     const isFavorite = favorites.some(fav => fav.idMeal === recipe.idMeal)
@@ -215,9 +275,12 @@ function App() {
     if(isFavorite) {
       //* remove from favorites
       newFavorites = favorites.filter(fav => fav.idMeal !== recipe.idMeal)
+      showToast(`Removed "${recipe.strMeal}" from favorites`, "info")
+
     } else {
       //* add to favorites
       newFavorites = [...favorites, recipe]
+      showToast(`Added "${recipe.strMeal}" to favorites!`, "success")
     }
 
     setFavorites(newFavorites)
@@ -231,15 +294,18 @@ function App() {
 
   const clearAllFavorites = () => {
     if (window.confirm("Are you sure you want to clear all favorites?")) {
+      const count = favorites.length
       setFavorites([])
       saveFavoritesToStorage([])
+      showToast(`Removed ${count} favorite${count > 1 ? 's' : ''}`, 'success')
+
     }
   }
 
 
   //* Shopping list functions
   const addToShoppingList = (recipe) => {
-    // Extract ingredients from recipe
+    //* to extract ingredients from recipe
     const ingredients = []
     for (let i = 1; i <= 20; i++) {
       const ingredient = recipe[`strIngredient${i}`]
@@ -269,8 +335,12 @@ function App() {
     setShoppingList(updatedList)
     saveShoppingListToStorage(updatedList)
     
-    // Show success message
-    alert(`Added ${newItems.length} ingredients to shopping list!`)
+    //* show success message
+    if (newItems.length > 0) {
+      showToast(`Added ${newItems.length} ingredient${newItems.length > 1 ? "s" : ""} to shopping list!`, "succes")
+    } else {
+      showToast("All ingredients are already in your shopping list", "info")
+    }
   }
 
   const toggleShoppingItem = (itemId) => {
@@ -289,15 +359,29 @@ function App() {
 
   const clearShoppingList = () => {
     if (window.confirm('Clear all items from shopping list?')) {
+      const count = shoppingList.length
       setShoppingList([])
       saveShoppingListToStorage([])
+      showToast(`Remove ${count} item${count > 1 ? "s" : ""} from shopping list`, "success")
     }
   }
 
   const clearCheckedItems = () => {
+    const checkedCount = shoppingList.filter(item => item.checked).length
     const updatedList = shoppingList.filter(item => !item.checked)
     setShoppingList(updatedList)
     saveShoppingListToStorage(updatedList)
+    showToast(`Removed ${checkedCount} checked item${checkedCount > 1 ? "s" : ""}`, "succe")
+  }
+
+  const showToast = (message, type = "success") => {
+    const id = Date.now()
+    setToasts(prev => [... prev, { id, message, type }])
+  }
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id))
+
   }
 
 
@@ -433,6 +517,9 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* Toast Notifications  */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
 
     </div>
   )

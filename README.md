@@ -1,4 +1,4 @@
-## Dishlyst – Recipe Finder & Meal Planner
+# Dishlyst – Recipe Finder & Meal Planner
 
 Dishlyst is a modern web app that lets users discover, save, and organize recipes. You can search by ingredients, cuisine, or category, then save your favorite meals and automatically build a shopping list all in one place.
 

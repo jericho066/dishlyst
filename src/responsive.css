@@ -258,6 +258,24 @@
     font-size: 0.75rem;
     padding: 1rem 0;
   }
+
+  /** Toast Notification  */
+  .toast-container {
+    top: 4rem;
+    right: 0.5rem;
+    left: 0.5rem;
+    max-width: none;
+  }
+
+  .toast {
+    min-width: auto;
+    width: 100%;
+    padding: 0.875rem 1rem;
+  }
+
+  .toast-message {
+    font-size: 0.875rem;
+  }
 }
 
 
@@ -300,6 +318,7 @@
   .page-title {
     font-size: 1.125rem;
   }
+  
 }
 
 /* Landscape mobile (max-height: 500px and orientation) */
