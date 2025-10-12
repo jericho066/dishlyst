@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react'
 import logoImage from './assets/logo.png';
 
-// Mock API functions
+
+
+//* ======================= 
+//* ==== API functions ====
+//* =======================
+
 const searchRecipes = async (query) => {
   const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`)
   const data = await response.json()
@@ -43,7 +48,10 @@ const getRecipeById = async (id) => {
 }
 
 
-//* LocalStorage helpers
+
+//* ==============================
+//* ==== LocalStorage helpers ====
+//* ==============================
 const FAVORITES_KEY = 'dishlyst-favorites'
 
 const getFavoritesFromStorage = () => {
@@ -54,7 +62,6 @@ const getFavoritesFromStorage = () => {
 const saveFavoritesToStorage = (favorites) => {
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
 }
-
 
 
 const SHOPPING_LIST_KEY = 'dishlyst-shopping-list'
@@ -68,64 +75,6 @@ const saveShoppingListToStorage = (items) => {
   localStorage.setItem(SHOPPING_LIST_KEY, JSON.stringify(items))
 }
 
-
-function Toast({ message, type = "success", onClose }) {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onClose()
-    }, 3000)
-
-    return () => clearTimeout(timer)
-  }, [onClose])
-
-  const icons = {
-    success: 'bi-check-circle-fill',
-    info: 'bi-info-circle-fill',
-    warning: 'bi-exclamation-triangle-fill',
-    error: 'bi-x-circle-fill'
-  }
-
-  const colors = {
-    success: '#10b981',
-    info: '#3b82f6',
-    warning: '#f59e0b',
-    error: '#ef4444'
-  }
-
-  return (
-    <div
-      className='toast'
-      style={{
-        borderLeft: `4px solid ${colors[type]}`
-      }}
-    >
-      <i className={`bi ${icons[type]}`} style={{ color: colors[type] }}></i>
-      <span className='toast-message'>{message}</span>
-
-      <button className='toast-close' onClick={onClose}>
-        <i className='bi bi-x'></i>
-      </button>
-    </div>
-  )
-
-}
-
-function ToastContainer({ toasts, removeToast }) {
-  if(toasts.length === 0) return null
-
-  return (
-    <div className="toast-container">
-      {toasts.map(toast => (
-        <Toast
-          key={toast.id}
-          message={toast.message}
-          type={toast.type}
-          onClose={() => removeToast(toast.id)}
-        />
-      ))}
-    </div>
-  )
-}
 
 
 function App() {
@@ -376,7 +325,13 @@ function App() {
 
   const showToast = (message, type = "success") => {
     const id = Date.now()
-    setToasts(prev => [... prev, { id, message, type }])
+
+    //* clear the old toast first, then show the new toast.
+    setToasts([])
+
+    setTimeout(() => {
+      setToasts([{ id, message, type }])
+    }, 150)
   }
 
   const removeToast = (id) => {
@@ -1268,6 +1223,8 @@ function FavoritesPage({ favorites, onRecipeClick, onClearAll, onToggleFavorite,
   )
 }
 
+
+
 function ShoppingListPage({ items, onToggleItem, onRemoveItem, onClearAll, onClearChecked, setCurrentPage }) {
   if (items.length === 0) {
     return (
@@ -1352,5 +1309,68 @@ function ShoppingListPage({ items, onToggleItem, onRemoveItem, onClearAll, onCle
 
   )
 }
+
+//* ============================
+//* ==== TOAST NOTIFICATION ====
+//* ============================
+
+function Toast({ message, type = "success", onClose }) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose()
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [onClose])
+
+  const icons = {
+    success: 'bi-check-circle-fill',
+    info: 'bi-info-circle-fill',
+    warning: 'bi-exclamation-triangle-fill',
+    error: 'bi-x-circle-fill'
+  }
+
+  const colors = {
+    success: '#10b981',
+    info: '#3b82f6',
+    warning: '#f59e0b',
+    error: '#ef4444'
+  }
+
+  return (
+    <div
+      className='toast'
+      style={{
+        borderLeft: `4px solid ${colors[type]}`
+      }}
+    >
+      <i className={`bi ${icons[type]}`} style={{ color: colors[type] }}></i>
+      <span className='toast-message'>{message}</span>
+
+      <button className='toast-close' onClick={onClose}>
+        <i className='bi bi-x'></i>
+      </button>
+    </div>
+  )
+
+}
+
+function ToastContainer({ toasts, removeToast }) {
+  if(toasts.length === 0) return null
+
+  return (
+    <div className="toast-container">
+      {toasts.map(toast => (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          type={toast.type}
+          onClose={() => removeToast(toast.id)}
+        />
+      ))}
+    </div>
+  )
+}
+
 
 export default App
