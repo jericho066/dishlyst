@@ -179,10 +179,24 @@ function App() {
       data = fullRecipes.filter(recipe => recipe && recipe.strArea === filters.area)
 
     } else if (filters.category) {
-      data = await filterByCategory(filters.category)
+
+      const categoryResults = await filterByCategory(filters.category)
+
+      const detailedMeals = await Promise.all(
+        categoryResults.slice(0, 20).map(meal => getRecipeById(meal.idMeal))
+      )
+
+      data = detailedMeals.filter(recipe => recipe !== null)
 
     } else if (filters.area) {
-      data = await filterByArea(filters.area)
+      
+      const areaResults = await filterByArea(filters.area)
+
+      const detailedMeals = await Promise.all(
+        areaResults.slice(0, 20).map(meal => getRecipeById(meal.idMeal))
+      )
+
+      data = detailedMeals.filter(recipe => recipe !== null)
     }
 
     
