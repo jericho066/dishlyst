@@ -286,7 +286,7 @@ function App() {
       }
     }
     
-    // Check for duplicates and add only new items
+    //* to check for duplicate recipes and add only new items
     const newItems = ingredients.filter(newItem => 
       !shoppingList.some(item => 
         item.ingredient.toLowerCase() === newItem.ingredient.toLowerCase() &&
