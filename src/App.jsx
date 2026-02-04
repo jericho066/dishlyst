@@ -1,5 +1,3 @@
-// src/App.jsx
-
 import { useState, useEffect } from 'react';
 import { getRecipeById } from './utils/api';
 import { PAGES } from './utils/constants';
@@ -8,7 +6,8 @@ import {
   useToast,
   useFavorites,
   useShoppingList,
-  useRecipes
+  useRecipes,
+  useMealPlanner  // ← ADD THIS
 } from './hooks';
 import {
   Header,
@@ -19,7 +18,8 @@ import {
 import {
   SearchPage,
   FavoritesPage,
-  ShoppingListPage
+  ShoppingListPage,
+  MealPlannerPage  // ← ADD THIS
 } from './components/pages';
 import { RecipeDetail } from './components/recipe';
 
@@ -35,6 +35,7 @@ function App() {
   const { favorites, isFavorite, toggleFavorite, clearAllFavorites } = useFavorites(showToast);
   const {
     shoppingList,
+    setShoppingList,
     addToShoppingList,
     toggleItem,
     removeItem,
@@ -52,6 +53,22 @@ function App() {
     clearFilters,
     refreshRecipes
   } = useRecipes();
+
+  // ← ADD MEAL PLANNER HOOK
+  const {
+    getCurrentWeekDates,
+    addMeal,
+    removeMeal,
+    getMeal,
+    clearWeek,
+    planRandomWeek,
+    generateShoppingList,
+    previousWeek,
+    nextWeek,
+    goToCurrentWeek,
+    isCurrentWeek,
+    currentWeekStart
+  } = useMealPlanner(showToast);
 
   // Debounced search query
   const debouncedSearchQuery = useDebounce(searchQuery);
@@ -74,14 +91,14 @@ function App() {
     }
 
     searchRecipes(debouncedSearchQuery);
-  }, [debouncedSearchQuery]); // Note: We intentionally don't include all dependencies to match original behavior
+  }, [debouncedSearchQuery]);
 
   // Apply filters when they change
   useEffect(() => {
     if (filters.category || filters.area) {
       applyFilters(filters);
     }
-  }, [filters.category, filters.area]); // Note: We intentionally use specific dependencies
+  }, [filters.category, filters.area]);
 
   // Check if filters are active
   const hasActiveFilters = filters.category !== '' || filters.area !== '';
@@ -105,6 +122,41 @@ function App() {
   // Close recipe detail
   const closeRecipeDetail = () => {
     setSelectedRecipe(null);
+  };
+
+
+  const handleGenerateShoppingListFromMealPlan = () => {
+    const { ingredients, recipeCount } = generateShoppingList();
+    
+    if (recipeCount === 0) {
+      showToast('No meals planned this week', 'info');
+      return;
+    }
+
+    // Filter out duplicates with existing shopping list
+    const newItems = ingredients.filter(newItem =>
+      !shoppingList.some(item =>
+        item.ingredient.toLowerCase() === newItem.ingredient.toLowerCase() &&
+        item.measure === newItem.measure
+      )
+    );
+
+    if (newItems.length === 0) {
+      showToast('All ingredients already in shopping list', 'info');
+      return;
+    }
+
+    // Add new items to shopping list
+    const updatedList = [...shoppingList, ...newItems];
+    setShoppingList(updatedList);
+    
+    showToast(
+      `Added ${newItems.length} ingredient${newItems.length > 1 ? 's' : ''} from ${recipeCount} recipe${recipeCount > 1 ? 's' : ''}`,
+      'success'
+    );
+    
+    // Switch to shopping list page
+    setCurrentPage(PAGES.SHOPPING_LIST);
   };
 
   // Render recipe detail if selected
@@ -193,6 +245,26 @@ function App() {
               onClearAll={clearAll}
               onClearChecked={clearChecked}
               setCurrentPage={setCurrentPage}
+            />
+          )}
+
+          {/* ← ADD MEAL PLANNER PAGE */}
+          {currentPage === PAGES.MEAL_PLANNER && (
+            <MealPlannerPage
+              weekDates={getCurrentWeekDates()}
+              getMeal={getMeal}
+              onAddMeal={addMeal}
+              onRemoveMeal={removeMeal}
+              onClearWeek={clearWeek}
+              onPlanRandom={planRandomWeek}
+              onGenerateShoppingList={handleGenerateShoppingListFromMealPlan}
+              onRecipeClick={openRecipeDetail}
+              favorites={favorites}
+              previousWeek={previousWeek}
+              nextWeek={nextWeek}
+              goToCurrentWeek={goToCurrentWeek}
+              isCurrentWeek={isCurrentWeek}
+              currentWeekStart={currentWeekStart}
             />
           )}
         </div>

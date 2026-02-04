@@ -53,7 +53,9 @@ export const AREAS = [
 // LocalStorage Keys
 export const STORAGE_KEYS = {
   FAVORITES: 'dishlyst-favorites',
-  SHOPPING_LIST: 'dishlyst-shopping-list'
+  SHOPPING_LIST: 'dishlyst-shopping-list',
+  MEAL_PLAN: 'dishlyst-meal-plan',
+  CURRENT_WEEK: 'dishlyst-current-week'
 };
 
 // Toast Types
@@ -68,8 +70,27 @@ export const TOAST_TYPES = {
 export const PAGES = {
   SEARCH: 'search',
   FAVORITES: 'favorites',
-  SHOPPING_LIST: 'shopping-list'
+  SHOPPING_LIST: 'shopping-list',
+  MEAL_PLANNER: 'meal-planner'
 };
+
+// Meal Types
+export const MEAL_TYPES = {
+  BREAKFAST: 'breakfast',
+  LUNCH: 'lunch',
+  DINNER: 'dinner'
+}
+
+// Day names
+export const DAY_NAMES = [
+  'Monday',
+  'Tuesday', 
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday'
+]
 
 // API Configuration
 export const API_CONFIG = {

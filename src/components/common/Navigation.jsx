@@ -8,6 +8,8 @@ export function Navigation({ currentPage, onPageChange, favoritesCount, shopping
     <nav className="nav">
       <div className="container">
         <div className="nav-content">
+
+          {/* DISCOVER BUTTON */}
           <button
             className={`nav-button ${currentPage === PAGES.SEARCH ? 'active' : ''}`}
             onClick={() => onPageChange(PAGES.SEARCH)}
@@ -15,6 +17,7 @@ export function Navigation({ currentPage, onPageChange, favoritesCount, shopping
             <i className="bi bi-search"></i> Discover
           </button>
 
+          {/* FAVORITES BUTTON */}
           <button
             className={`nav-button ${currentPage === PAGES.FAVORITES ? 'active' : ''}`}
             onClick={() => onPageChange(PAGES.FAVORITES)}
@@ -23,6 +26,15 @@ export function Navigation({ currentPage, onPageChange, favoritesCount, shopping
             {favoritesCount > 0 && ` (${favoritesCount})`}
           </button>
 
+          {/* MEAL PLANNER BUTTON */}
+          <button
+            className={`nav-button ${currentPage === PAGES.MEAL_PLANNER ? 'active' : ''}`}
+            onClick={() => onPageChange(PAGES.MEAL_PLANNER)}
+          >
+            <i className="bi bi-calendar-week"></i> Meal Planner
+          </button>
+
+          {/* SHOPPING LIST BUTTON */}
           <button
             className={`nav-button ${currentPage === PAGES.SHOPPING_LIST ? 'active' : ''}`}
             onClick={() => onPageChange(PAGES.SHOPPING_LIST)}
@@ -35,3 +47,4 @@ export function Navigation({ currentPage, onPageChange, favoritesCount, shopping
     </nav>
   );
 }
+

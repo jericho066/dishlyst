@@ -120,9 +120,23 @@ export function useShoppingList(showToast) {
     }
   }, [shoppingList, setShoppingList, showToast]);
 
+  /**
+   * Add items directly to shopping list (for meal planner)
+   */
+  const addItems = useCallback((items) => {
+    if (items.length === 0) return;
+    
+    const updatedList = [...shoppingList, ...items];
+    setShoppingList(updatedList);
+  }, [shoppingList, setShoppingList]);
+
+  
+
   return {
     shoppingList,
+    setShoppingList,
     addToShoppingList,
+    addItems,
     toggleItem,
     removeItem,
     clearAll,
