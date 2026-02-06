@@ -26,6 +26,14 @@ export function Navigation({ currentPage, onPageChange, favoritesCount, shopping
             {favoritesCount > 0 && ` (${favoritesCount})`}
           </button>
 
+          {/* COLLECTIONS BUTTON */}
+          <button
+            className={`nav-button ${currentPage === PAGES.COLLECTIONS ? 'active' : ''}`}
+            onClick={() => onPageChange(PAGES.COLLECTIONS)}
+          >
+            <i className="bi bi-collection"></i> Collections
+          </button>
+
           {/* MEAL PLANNER BUTTON */}
           <button
             className={`nav-button ${currentPage === PAGES.MEAL_PLANNER ? 'active' : ''}`}

@@ -9,7 +9,11 @@ export function FavoritesPage({
   onClearAll,
   onToggleFavorite,
   isFavorite,
-  setCurrentPage
+  setCurrentPage,
+  collections,
+  getRecipeCollections,
+  onAddToCollection,
+  onCreateNewCollection
 }) {
   // Empty state
   if (favorites.length === 0) {
@@ -55,6 +59,10 @@ export function FavoritesPage({
         onRecipeClick={onRecipeClick}
         isFavorite={isFavorite}
         onToggleFavorite={onToggleFavorite}
+        collections={collections}
+        getRecipeCollections={getRecipeCollections}
+        onAddToCollection={onAddToCollection}
+        onCreateNewCollection={onCreateNewCollection}
       />
     </div>
   );

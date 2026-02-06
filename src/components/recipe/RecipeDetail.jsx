@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AddToCollectionButton } from '../common/AddToCollectionButton';
 
 /**
  * Recipe Detail Component - Full recipe view
@@ -8,7 +9,11 @@ export function RecipeDetail({
   onClose, 
   isFavorite, 
   onToggleFavorite, 
-  onAddToShoppingList 
+  onAddToShoppingList,
+  collections,
+  getRecipeCollections,
+  onAddToCollection,
+  onCreateNewCollection
 }) {
   const [checkedIngredients, setCheckedIngredients] = useState({});
 
@@ -165,6 +170,17 @@ export function RecipeDetail({
             <i className="bi bi-cart-plus"></i>
             Add to Shopping List
           </button>
+
+          {collections && getRecipeCollections && onAddToCollection && onCreateNewCollection && (
+            <AddToCollectionButton
+              recipe={recipe}
+              collections={collections}
+              recipeCollections={getRecipeCollections(recipe.idMeal)}
+              onAddToCollection={onAddToCollection}
+              onCreateNewCollection={onCreateNewCollection}
+              variant="button"
+            />
+          )}
 
           {recipe.strYoutube && (
             <button

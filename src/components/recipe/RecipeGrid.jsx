@@ -3,7 +3,16 @@ import { RecipeCard } from './RecipeCard';
 /**
  * Recipe Grid Component - displays recipes in a grid layout
  */
-export function RecipeGrid({ recipes, onRecipeClick, isFavorite, onToggleFavorite }) {
+export function RecipeGrid({ 
+  recipes, 
+  onRecipeClick, 
+  isFavorite, 
+  onToggleFavorite,
+  collections,
+  getRecipeCollections,
+  onAddToCollection,
+  onCreateNewCollection
+}) {
   if (recipes.length === 0) {
     return null;
   }
@@ -17,9 +26,12 @@ export function RecipeGrid({ recipes, onRecipeClick, isFavorite, onToggleFavorit
           onClick={onRecipeClick}
           isFavorite={isFavorite}
           onToggleFavorite={onToggleFavorite}
+          collections={collections}
+          getRecipeCollections={getRecipeCollections}
+          onAddToCollection={onAddToCollection}
+          onCreateNewCollection={onCreateNewCollection}
         />
       ))}
     </div>
   );
 }
-

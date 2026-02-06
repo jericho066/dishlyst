@@ -16,7 +16,12 @@ export function SearchPage({
   onRecipeClick,
   isFavorite,
   onToggleFavorite,
-  onRefresh
+  onRefresh,
+  // ← ADD THESE PROPS
+  collections,
+  getRecipeCollections,
+  onAddToCollection,
+  onCreateNewCollection
 }) {
   return (
     <div>
@@ -83,6 +88,11 @@ export function SearchPage({
           onRecipeClick={onRecipeClick}
           isFavorite={isFavorite}
           onToggleFavorite={onToggleFavorite}
+          // ← PASS COLLECTION PROPS
+          collections={collections}
+          getRecipeCollections={getRecipeCollections}
+          onAddToCollection={onAddToCollection}
+          onCreateNewCollection={onCreateNewCollection}
         />
       )}
     </div>

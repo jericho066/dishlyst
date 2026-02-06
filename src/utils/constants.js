@@ -55,7 +55,8 @@ export const STORAGE_KEYS = {
   FAVORITES: 'dishlyst-favorites',
   SHOPPING_LIST: 'dishlyst-shopping-list',
   MEAL_PLAN: 'dishlyst-meal-plan',
-  CURRENT_WEEK: 'dishlyst-current-week'
+  CURRENT_WEEK: 'dishlyst-current-week',
+  COLLECTIONS: 'dishlyst-collections'
 };
 
 // Toast Types
@@ -71,7 +72,8 @@ export const PAGES = {
   SEARCH: 'search',
   FAVORITES: 'favorites',
   SHOPPING_LIST: 'shopping-list',
-  MEAL_PLANNER: 'meal-planner'
+  MEAL_PLANNER: 'meal-planner',
+  COLLECTIONS: 'collections'
 };
 
 // Meal Types

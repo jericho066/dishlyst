@@ -1,15 +1,32 @@
+import { AddToCollectionButton } from '../common/AddToCollectionButton';
+
 /**
  * Recipe Card Component
  */
-export function RecipeCard({ recipe, onClick, isFavorite, onToggleFavorite }) {
+export function RecipeCard({
+  recipe,
+  onClick,
+  isFavorite,
+  onToggleFavorite,
+  collections,
+  getRecipeCollections,
+  onAddToCollection,
+  onCreateNewCollection,
+}) {
   const handleClick = () => {
     onClick(recipe.idMeal);
   };
 
   const handleFavoriteClick = (e) => {
-    e.stopPropagation(); // Prevent card click when clicking favorite button
+    e.stopPropagation();
     onToggleFavorite(recipe);
   };
+
+  // Get collections for this recipe
+  const recipeCollections =
+    collections && getRecipeCollections
+      ? getRecipeCollections(recipe.idMeal)
+      : [];
 
   return (
     <div className="recipe-card" onClick={handleClick}>
@@ -21,13 +38,36 @@ export function RecipeCard({ recipe, onClick, isFavorite, onToggleFavorite }) {
         loading="lazy"
       />
 
-      {/* Favorite Button */}
+      {/* ← ADD COLLECTION BUTTON (bottom-left) */}
+      {collections &&
+        getRecipeCollections &&
+        onAddToCollection &&
+        onCreateNewCollection && (
+          <div onClick={(e) => e.stopPropagation()}>
+            <AddToCollectionButton
+              recipe={recipe}
+              collections={collections}
+              recipeCollections={recipeCollections}
+              onAddToCollection={onAddToCollection}
+              onCreateNewCollection={onCreateNewCollection}
+              variant="icon"
+            />
+          </div>
+        )}
+
+      {/* Favorite Button (top-right) */}
       <button
         className={`favorite-button ${isFavorite(recipe.idMeal) ? 'active' : ''}`}
         onClick={handleFavoriteClick}
-        aria-label={isFavorite(recipe.idMeal) ? 'Remove from favorites' : 'Add to favorites'}
+        aria-label={
+          isFavorite(recipe.idMeal)
+            ? 'Remove from favorites'
+            : 'Add to favorites'
+        }
       >
-        <i className={`bi ${isFavorite(recipe.idMeal) ? 'bi-heart-fill' : 'bi-heart'}`}></i>
+        <i
+          className={`bi ${isFavorite(recipe.idMeal) ? 'bi-heart-fill' : 'bi-heart'}`}
+        ></i>
       </button>
 
       {/* Recipe Info */}

@@ -7,3 +7,4 @@ export { useFavorites } from './useFavorites';
 export { useShoppingList } from './useShoppingList';
 export { useRecipes } from './useRecipes';
 export { useMealPlanner } from './useMealPlanner';
+export { useCollections } from './useCollections';

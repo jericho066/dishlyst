@@ -1,3 +1,5 @@
+// src/App.jsx
+
 import { useState, useEffect } from 'react';
 import { getRecipeById } from './utils/api';
 import { PAGES } from './utils/constants';
@@ -7,19 +9,22 @@ import {
   useFavorites,
   useShoppingList,
   useRecipes,
-  useMealPlanner  // ← ADD THIS
+  useMealPlanner,
+  useCollections, // ← ADD THIS
 } from './hooks';
 import {
   Header,
   Navigation,
   Footer,
-  ToastContainer
+  ToastContainer,
 } from './components/common';
 import {
   SearchPage,
   FavoritesPage,
   ShoppingListPage,
-  MealPlannerPage  // ← ADD THIS
+  MealPlannerPage,
+  CollectionsPage, // ← ADD THIS
+  CollectionDetailView, // ← ADD THIS
 } from './components/pages';
 import { RecipeDetail } from './components/recipe';
 
@@ -30,9 +35,13 @@ function App() {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [recipeDetailLoading, setRecipeDetailLoading] = useState(false);
 
+  // ← ADD COLLECTION VIEW STATE
+  const [viewingCollectionId, setViewingCollectionId] = useState(null);
+
   // Custom Hooks
   const { toasts, showToast, removeToast } = useToast();
-  const { favorites, isFavorite, toggleFavorite, clearAllFavorites } = useFavorites(showToast);
+  const { favorites, isFavorite, toggleFavorite, clearAllFavorites } =
+    useFavorites(showToast);
   const {
     shoppingList,
     setShoppingList,
@@ -40,7 +49,7 @@ function App() {
     toggleItem,
     removeItem,
     clearAll,
-    clearChecked
+    clearChecked,
   } = useShoppingList(showToast);
   const {
     recipes,
@@ -51,10 +60,8 @@ function App() {
     searchRecipes,
     applyFilters,
     clearFilters,
-    refreshRecipes
+    refreshRecipes,
   } = useRecipes();
-
-  // ← ADD MEAL PLANNER HOOK
   const {
     getCurrentWeekDates,
     addMeal,
@@ -67,8 +74,21 @@ function App() {
     nextWeek,
     goToCurrentWeek,
     isCurrentWeek,
-    currentWeekStart
+    currentWeekStart,
   } = useMealPlanner(showToast);
+
+  // ← ADD COLLECTIONS HOOK
+  const {
+    collections,
+    createCollection,
+    updateCollection,
+    deleteCollection,
+    addRecipeToCollection,
+    removeRecipeFromCollection,
+    getCollection,
+    getCollectionRecipes,
+    getRecipeCollections,
+  } = useCollections(showToast, favorites);
 
   // Debounced search query
   const debouncedSearchQuery = useDebounce(searchQuery);
@@ -84,21 +104,30 @@ function App() {
       if (recipes.length > 0) {
         if (filters.category || filters.area) {
           setFilters({ category: '', area: '' });
+        } else {
+          loadRandomRecipes();
         }
-        loadRandomRecipes();
       }
       return;
     }
 
     searchRecipes(debouncedSearchQuery);
-  }, [debouncedSearchQuery]);
+  }, [
+    debouncedSearchQuery,
+    filters.category,
+    filters.area,
+    recipes.length,
+    setFilters,
+    loadRandomRecipes,
+    searchRecipes,
+  ]);
 
   // Apply filters when they change
   useEffect(() => {
     if (filters.category || filters.area) {
       applyFilters(filters);
     }
-  }, [filters.category, filters.area]);
+  }, [filters, applyFilters]);
 
   // Check if filters are active
   const hasActiveFilters = filters.category !== '' || filters.area !== '';
@@ -111,7 +140,7 @@ function App() {
     // Scroll to top
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
 
     const recipe = await getRecipeById(recipeId);
@@ -124,21 +153,24 @@ function App() {
     setSelectedRecipe(null);
   };
 
-
+  // Shopping list generation from meal plan
   const handleGenerateShoppingListFromMealPlan = () => {
     const { ingredients, recipeCount } = generateShoppingList();
-    
+
     if (recipeCount === 0) {
       showToast('No meals planned this week', 'info');
       return;
     }
 
     // Filter out duplicates with existing shopping list
-    const newItems = ingredients.filter(newItem =>
-      !shoppingList.some(item =>
-        item.ingredient.toLowerCase() === newItem.ingredient.toLowerCase() &&
-        item.measure === newItem.measure
-      )
+    const newItems = ingredients.filter(
+      (newItem) =>
+        !shoppingList.some(
+          (item) =>
+            item.ingredient.toLowerCase() ===
+              newItem.ingredient.toLowerCase() &&
+            item.measure === newItem.measure,
+        ),
     );
 
     if (newItems.length === 0) {
@@ -149,14 +181,38 @@ function App() {
     // Add new items to shopping list
     const updatedList = [...shoppingList, ...newItems];
     setShoppingList(updatedList);
-    
+
     showToast(
       `Added ${newItems.length} ingredient${newItems.length > 1 ? 's' : ''} from ${recipeCount} recipe${recipeCount > 1 ? 's' : ''}`,
-      'success'
+      'success',
     );
-    
+
     // Switch to shopping list page
     setCurrentPage(PAGES.SHOPPING_LIST);
+  };
+
+  // ← ADD COLLECTION HANDLERS
+
+  // Open collection detail view
+  const handleOpenCollection = (collectionId) => {
+    setViewingCollectionId(collectionId);
+  };
+
+  // Close collection detail view
+  const handleCloseCollection = () => {
+    setViewingCollectionId(null);
+  };
+
+  // Handle create new collection from various places
+  const handleCreateNewCollection = () => {
+    setCurrentPage(PAGES.COLLECTIONS);
+    setViewingCollectionId(null);
+  };
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    setViewingCollectionId(null);
   };
 
   // Render recipe detail if selected
@@ -169,6 +225,10 @@ function App() {
           isFavorite={isFavorite}
           onToggleFavorite={toggleFavorite}
           onAddToShoppingList={addToShoppingList}
+          collections={collections}
+          getRecipeCollections={getRecipeCollections}
+          onAddToCollection={addRecipeToCollection}
+          onCreateNewCollection={handleCreateNewCollection}
         />
         <ToastContainer toasts={toasts} removeToast={removeToast} />
       </>
@@ -199,7 +259,7 @@ function App() {
       {/* Navigation */}
       <Navigation
         currentPage={currentPage}
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
         favoritesCount={favorites.length}
         shoppingListCount={shoppingList.length}
       />
@@ -221,6 +281,10 @@ function App() {
               isFavorite={isFavorite}
               onToggleFavorite={toggleFavorite}
               onRefresh={refreshRecipes}
+              collections={collections}
+              getRecipeCollections={getRecipeCollections}
+              onAddToCollection={addRecipeToCollection}
+              onCreateNewCollection={handleCreateNewCollection}
             />
           )}
 
@@ -233,6 +297,10 @@ function App() {
               onToggleFavorite={toggleFavorite}
               isFavorite={isFavorite}
               setCurrentPage={setCurrentPage}
+              collections={collections}
+              getRecipeCollections={getRecipeCollections}
+              onAddToCollection={addRecipeToCollection}
+              onCreateNewCollection={handleCreateNewCollection}
             />
           )}
 
@@ -248,7 +316,7 @@ function App() {
             />
           )}
 
-          {/* ← ADD MEAL PLANNER PAGE */}
+          {/* Meal Planner Page */}
           {currentPage === PAGES.MEAL_PLANNER && (
             <MealPlannerPage
               weekDates={getCurrentWeekDates()}
@@ -265,6 +333,41 @@ function App() {
               goToCurrentWeek={goToCurrentWeek}
               isCurrentWeek={isCurrentWeek}
               currentWeekStart={currentWeekStart}
+            />
+          )}
+
+          {/* ← ADD COLLECTIONS PAGE */}
+          {currentPage === PAGES.COLLECTIONS && !viewingCollectionId && (
+            <CollectionsPage
+              collections={collections}
+              getCollectionRecipes={getCollectionRecipes}
+              onCreateCollection={createCollection}
+              onUpdateCollection={updateCollection}
+              onDeleteCollection={deleteCollection}
+              onOpenCollection={handleOpenCollection}
+              setCurrentPage={setCurrentPage}
+            />
+          )}
+
+          {/* ← ADD COLLECTION DETAIL VIEW */}
+          {currentPage === PAGES.COLLECTIONS && viewingCollectionId && (
+            <CollectionDetailView
+              collection={getCollection(viewingCollectionId)}
+              recipes={getCollectionRecipes(viewingCollectionId)}
+              onBack={handleCloseCollection}
+              onEdit={() => {
+                // Close detail view
+                handleCloseCollection();
+              }}
+              onDelete={(collectionId) => {
+                deleteCollection(collectionId);
+                handleCloseCollection();
+              }}
+              onRecipeClick={openRecipeDetail}
+              onRemoveRecipe={removeRecipeFromCollection}
+              isFavorite={isFavorite}
+              onToggleFavorite={toggleFavorite}
+              setCurrentPage={setCurrentPage}
             />
           )}
         </div>
