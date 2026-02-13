@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AddToCollectionButton } from '../common/AddToCollectionButton';
+import { CookingMode } from './CookingMode';
 
 /**
  * Recipe Detail Component - Full recipe view
@@ -16,8 +17,19 @@ export function RecipeDetail({
   onCreateNewCollection
 }) {
   const [checkedIngredients, setCheckedIngredients] = useState({});
+  const [isCookingMode, setIsCookingMode] = useState(false);
 
   if (!recipe) return null;
+
+  // If cooking mode is active, render only CookingMode
+  if (isCookingMode) {
+    return (
+      <CookingMode 
+        recipe={recipe} 
+        onExit={() => setIsCookingMode(false)} 
+      />
+    );
+  }
 
   // Extract ingredients
   const ingredients = [];
@@ -160,6 +172,29 @@ export function RecipeDetail({
             </ol>
           </div>
         </div>
+
+        {/* START COOKING BUTTON BEFORE OTHER ACTION BUTTONS */}
+        <div className="cooking-mode-banner">
+          <div className="cooking-mode-banner-content">
+            <div className="cooking-mode-banner-icon">
+              <i className="bi bi-play-circle-fill"></i>
+            </div>
+            <div className="cooking-mode-banner-text">
+              <h3 className="cooking-mode-banner-title">Ready to Cook?</h3>
+              <p className="cooking-mode-banner-description">
+                Start hands-free cooking mode with step-by-step instructions and timers
+              </p>
+            </div>
+            <button 
+              className="cooking-mode-banner-button"
+              onClick={() => setIsCookingMode(true)}
+            >
+              <i className="bi bi-play-fill"></i>
+              Start Cooking
+            </button>
+          </div>
+        </div>
+
 
         {/* Action Buttons */}
         <div className="action-buttons">

@@ -1,5 +1,3 @@
-// src/hooks/index.js
-
 export { useLocalStorage } from './useLocalStorage';
 export { useDebounce } from './useDebounce';
 export { useToast } from './useToast';
@@ -8,3 +6,4 @@ export { useShoppingList } from './useShoppingList';
 export { useRecipes } from './useRecipes';
 export { useMealPlanner } from './useMealPlanner';
 export { useCollections } from './useCollections';
+export { useCookingMode } from './useCookingMode';

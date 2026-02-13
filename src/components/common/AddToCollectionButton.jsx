@@ -4,14 +4,14 @@ import { createPortal } from 'react-dom';
 /**
  * Add to Collection Modal Component
  */
-function AddToCollectionModal({ 
-  isOpen, 
-  onClose, 
+function AddToCollectionModal({
+  isOpen,
+  onClose,
   recipe,
-  collections, 
+  collections,
   recipeCollections,
   onAddToCollection,
-  onCreateNew
+  onCreateNew,
 }) {
   const [selectedCollections, setSelectedCollections] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,20 +19,20 @@ function AddToCollectionModal({
   if (!isOpen || !recipe) return null;
 
   // Filter collections by search
-  const filteredCollections = collections.filter(collection =>
-    collection.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCollections = collections.filter((collection) =>
+    collection.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Check if recipe is already in a collection
   const isInCollection = (collectionId) => {
-    return recipeCollections.some(c => c.id === collectionId);
+    return recipeCollections.some((c) => c.id === collectionId);
   };
 
   // Toggle collection selection
   const toggleCollection = (collectionId) => {
-    setSelectedCollections(prev => {
+    setSelectedCollections((prev) => {
       if (prev.includes(collectionId)) {
-        return prev.filter(id => id !== collectionId);
+        return prev.filter((id) => id !== collectionId);
       } else {
         return [...prev, collectionId];
       }
@@ -46,7 +46,7 @@ function AddToCollectionModal({
       return;
     }
 
-    onAddToCollection(recipe.idMeal, selectedCollections);
+    onAddToCollection(recipe, selectedCollections);
     setSelectedCollections([]);
     setSearchQuery('');
     onClose();
@@ -61,7 +61,10 @@ function AddToCollectionModal({
 
   const modalContent = (
     <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content add-to-collection-modal" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal-content add-to-collection-modal"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="modal-header">
           <h2 className="modal-title">Add to Collections</h2>
           <button className="modal-close" onClick={handleClose}>
@@ -72,8 +75,8 @@ function AddToCollectionModal({
         <div className="modal-body">
           {/* Recipe Info */}
           <div className="modal-recipe-info">
-            <img 
-              src={recipe.strMealThumb} 
+            <img
+              src={recipe.strMealThumb}
               alt={recipe.strMeal}
               className="modal-recipe-thumb"
             />
@@ -100,12 +103,15 @@ function AddToCollectionModal({
 
           {/* Collections List */}
           {collections.length === 0 ? (
-            <div className="empty-state" style={{ padding: 'var(--space-8) var(--space-4)' }}>
+            <div
+              className="empty-state"
+              style={{ padding: 'var(--space-8) var(--space-4)' }}
+            >
               <div className="empty-state-icon">
                 <i className="bi bi-collection"></i>
               </div>
               <p className="page-description">No collections yet</p>
-              <button 
+              <button
                 className="browse-button"
                 onClick={() => {
                   handleClose();
@@ -116,7 +122,10 @@ function AddToCollectionModal({
               </button>
             </div>
           ) : filteredCollections.length === 0 ? (
-            <div className="empty-state" style={{ padding: 'var(--space-8) var(--space-4)' }}>
+            <div
+              className="empty-state"
+              style={{ padding: 'var(--space-8) var(--space-4)' }}
+            >
               <div className="empty-state-icon">
                 <i className="bi bi-search"></i>
               </div>
@@ -124,7 +133,7 @@ function AddToCollectionModal({
             </div>
           ) : (
             <div className="collections-list">
-              {filteredCollections.map(collection => {
+              {filteredCollections.map((collection) => {
                 const alreadyInCollection = isInCollection(collection.id);
                 const isSelected = selectedCollections.includes(collection.id);
 
@@ -136,12 +145,14 @@ function AddToCollectionModal({
                     <input
                       type="checkbox"
                       checked={alreadyInCollection || isSelected}
-                      onChange={() => !alreadyInCollection && toggleCollection(collection.id)}
+                      onChange={() =>
+                        !alreadyInCollection && toggleCollection(collection.id)
+                      }
                       disabled={alreadyInCollection}
                       className="collection-checkbox-input"
                     />
-                    
-                    <div 
+
+                    <div
                       className="collection-checkbox-icon"
                       style={{ backgroundColor: collection.color }}
                     >
@@ -173,7 +184,7 @@ function AddToCollectionModal({
 
           {/* Create New Collection Button */}
           {collections.length > 0 && (
-            <button 
+            <button
               className="create-collection-button"
               onClick={() => {
                 handleClose();
@@ -189,18 +200,16 @@ function AddToCollectionModal({
         {/* Modal Footer */}
         {collections.length > 0 && (
           <div className="modal-footer">
-            <button 
-              className="action-button"
-              onClick={handleClose}
-            >
+            <button className="action-button" onClick={handleClose}>
               Cancel
             </button>
-            <button 
+            <button
               className="action-button primary"
               onClick={handleSave}
               disabled={selectedCollections.length === 0}
             >
-              Add to {selectedCollections.length} {selectedCollections.length === 1 ? 'Collection' : 'Collections'}
+              Add to {selectedCollections.length}{' '}
+              {selectedCollections.length === 1 ? 'Collection' : 'Collections'}
             </button>
           </div>
         )}
@@ -215,13 +224,13 @@ function AddToCollectionModal({
 /**
  * Add to Collection Button Component
  */
-export function AddToCollectionButton({ 
+export function AddToCollectionButton({
   recipe,
   collections,
   recipeCollections,
   onAddToCollection,
   onCreateNewCollection,
-  variant = 'icon' // 'icon' or 'button'
+  variant = 'icon', // 'icon' or 'button'
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -237,12 +246,16 @@ export function AddToCollectionButton({
   if (variant === 'button') {
     return (
       <>
-        <button 
+        <button
           className={`action-button ${isInAnyCollection ? 'added' : ''}`}
           onClick={handleOpenModal}
         >
-          <i className={`bi ${isInAnyCollection ? 'bi-collection-fill' : 'bi-collection'}`}></i>
-          {isInAnyCollection ? `In ${recipeCollections.length} ${recipeCollections.length === 1 ? 'Collection' : 'Collections'}` : 'Add to Collection'}
+          <i
+            className={`bi ${isInAnyCollection ? 'bi-collection-fill' : 'bi-collection'}`}
+          ></i>
+          {isInAnyCollection
+            ? `In ${recipeCollections.length} ${recipeCollections.length === 1 ? 'Collection' : 'Collections'}`
+            : 'Add to Collection'}
         </button>
 
         <AddToCollectionModal
@@ -265,11 +278,19 @@ export function AddToCollectionButton({
         className={`collection-button ${isInAnyCollection ? 'active' : ''}`}
         onClick={handleOpenModal}
         aria-label="Add to collection"
-        title={isInAnyCollection ? `In ${recipeCollections.length} collection(s)` : 'Add to collection'}
+        title={
+          isInAnyCollection
+            ? `In ${recipeCollections.length} collection(s)`
+            : 'Add to collection'
+        }
       >
-        <i className={`bi ${isInAnyCollection ? 'bi-collection-fill' : 'bi-collection'}`}></i>
+        <i
+          className={`bi ${isInAnyCollection ? 'bi-collection-fill' : 'bi-collection'}`}
+        ></i>
         {isInAnyCollection && recipeCollections.length > 0 && (
-          <span className="collection-count-badge">{recipeCollections.length}</span>
+          <span className="collection-count-badge">
+            {recipeCollections.length}
+          </span>
         )}
       </button>
 

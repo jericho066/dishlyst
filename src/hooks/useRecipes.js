@@ -1,5 +1,3 @@
-// src/hooks/useRecipes.js
-
 import { useState, useCallback } from 'react';
 import * as api from '../utils/api';
 

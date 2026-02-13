@@ -1987,7 +1987,7 @@ select:focus-visible {
   gap: var(--space-4);
 }
 
-.collections-header .action-button {
+.collections-header .action-button, .collection-recipes-header .action-button {
   flex: 0 1 auto;
   min-width: auto;
   white-space: nowrap;
@@ -2902,3 +2902,844 @@ select:focus-visible {
     gap: var(--space-2);
   }
 }
+
+
+
+/*? ====================== */
+/*? ==== COOKING MODE ==== */
+/*? ====================== */
+
+.cooking-mode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-background);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ============================= */
+/* PROGRESS BAR                  */
+/* ============================= */
+
+.cooking-progress-bar {
+  background: var(--color-surface);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.cooking-progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+.cooking-progress-text {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+}
+
+.cooking-progress-percent {
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  color: var(--color-primary);
+}
+
+.cooking-progress-track {
+  height: 8px;
+  background: var(--gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.cooking-progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+/* ============================= */
+/* COOKING MODE HEADER           */
+/* ============================= */
+
+.cooking-mode-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-4);
+}
+
+.cooking-mode-exit {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cooking-mode-exit:hover {
+  background: var(--error);
+  border-color: var(--error);
+  color: white;
+}
+
+.cooking-mode-recipe-name {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  text-align: center;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cooking-mode-ingredients-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--orange-50);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cooking-mode-ingredients-toggle:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* ============================= */
+/* INGREDIENTS SIDEBAR           */
+/* ============================= */
+
+.cooking-ingredients-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 100vh;
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition-base);
+  z-index: 10000;
+}
+
+.cooking-ingredients-sidebar.hidden {
+  transform: translateX(100%);
+}
+
+.cooking-ingredients-sidebar.visible {
+  transform: translateX(0);
+}
+
+.cooking-ingredients-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--gray-50);
+}
+
+.cooking-ingredients-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.cooking-ingredients-count {
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  background: var(--orange-50);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-semibold);
+}
+
+.cooking-ingredients-close {
+  background: none;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-2xl);
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.cooking-ingredients-close:hover {
+  background: var(--gray-200);
+  color: var(--color-text-primary);
+}
+
+.cooking-ingredients-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+.cooking-ingredient-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.cooking-ingredient-item:hover {
+  background: var(--gray-50);
+}
+
+.cooking-ingredient-checkbox {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.cooking-ingredient-text {
+  flex: 1;
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+}
+
+.cooking-ingredient-text strong {
+  color: var(--color-primary);
+  font-weight: var(--font-semibold);
+  margin-right: var(--space-2);
+}
+
+.cooking-ingredient-item:has(.cooking-ingredient-checkbox:checked) .cooking-ingredient-text {
+  text-decoration: line-through;
+  color: var(--color-text-secondary);
+}
+
+/* ============================= */
+/* COOKING MODE CONTENT          */
+/* ============================= */
+
+.cooking-mode-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-8);
+  overflow-y: auto;
+  gap: var(--space-8);
+}
+
+/* ============================= */
+/* STEP DISPLAY                  */
+/* ============================= */
+
+.cooking-step-container {
+  max-width: 900px;
+  width: 100%;
+  text-align: center;
+}
+
+.cooking-step-number {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--space-4);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+.cooking-step-text {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--leading-relaxed);
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--color-border);
+}
+
+/* ============================= */
+/* TIMER SECTION                 */
+/* ============================= */
+
+.cooking-timer-section {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+/* Active Timer */
+.cooking-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.cooking-timer.warning .cooking-timer-progress {
+  stroke: var(--error);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.cooking-timer-circle {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.cooking-timer-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.cooking-timer-bg {
+  fill: none;
+  stroke: var(--gray-200);
+  stroke-width: 8;
+}
+
+.cooking-timer-progress {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s linear;
+}
+
+.cooking-timer-time {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.cooking-timer-cancel {
+  padding: var(--space-3) var(--space-6);
+  background: transparent;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cooking-timer-cancel:hover {
+  background: var(--error);
+  border-color: var(--error);
+  color: white;
+}
+
+/* Quick Timers */
+.quick-timers {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.quick-timers-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+}
+
+.quick-timer-button {
+  padding: var(--space-2) var(--space-4);
+  background: var(--orange-50);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.quick-timer-button:hover {
+  background: var(--color-primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.quick-timer-button:active {
+  transform: translateY(0);
+}
+
+/* Custom Timer */
+.custom-timer {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.custom-timer-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+}
+
+.custom-timer-input {
+  width: 60px;
+  height: 44px;
+  padding: var(--space-2);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  text-align: center;
+  color: var(--color-text-primary);
+  background: var(--gray-50);
+  font-variant-numeric: tabular-nums;
+}
+
+.custom-timer-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+}
+
+.custom-timer-colon {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+}
+
+.custom-timer-start {
+  padding: var(--space-2) var(--space-5);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.custom-timer-start:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.custom-timer-start:active {
+  transform: translateY(0);
+}
+
+/* ============================= */
+/* NAVIGATION BUTTONS            */
+/* ============================= */
+
+.cooking-mode-navigation {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.cooking-nav-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-8);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  min-width: 200px;
+  justify-content: center;
+}
+
+.cooking-nav-button:hover:not(:disabled) {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.cooking-nav-button:active:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.cooking-nav-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cooking-nav-button.next,
+.cooking-nav-button.finish {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.cooking-nav-button.next:hover:not(:disabled),
+.cooking-nav-button.finish:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: white;
+}
+
+.cooking-nav-button i {
+  font-size: var(--text-2xl);
+}
+
+/* ============================= */
+/* KEYBOARD HINTS                */
+/* ============================= */
+
+.cooking-keyboard-hints {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-6);
+  padding: var(--space-3);
+  background: var(--gray-50);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.cooking-keyboard-hints kbd {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: monospace;
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  box-shadow: 0 2px 0 var(--gray-300);
+  margin: 0 var(--space-1);
+}
+
+/* ============================= */
+/* RESPONSIVE - COOKING MODE     */
+/* ============================= */
+
+@media (max-width: 968px) {
+  .cooking-ingredients-sidebar {
+    width: 350px;
+  }
+
+  .cooking-step-text {
+    font-size: clamp(1.25rem, 3.5vw, 2rem);
+    padding: var(--space-5);
+  }
+
+  .cooking-timer-circle {
+    width: 160px;
+    height: 160px;
+  }
+
+  .cooking-timer-time {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .cooking-mode-header {
+    padding: var(--space-3);
+  }
+
+  .cooking-mode-recipe-name {
+    font-size: var(--text-lg);
+  }
+
+  .cooking-mode-exit,
+  .cooking-mode-ingredients-toggle {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+  }
+
+  .cooking-mode-exit span,
+  .cooking-mode-ingredients-toggle span {
+    display: none;
+  }
+
+  .cooking-ingredients-sidebar {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .cooking-mode-content {
+    padding: var(--space-4);
+    gap: var(--space-6);
+  }
+
+  .cooking-step-number {
+    font-size: var(--text-xl);
+  }
+
+  .cooking-step-text {
+    font-size: clamp(1.125rem, 3vw, 1.5rem);
+    padding: var(--space-4);
+  }
+
+  .cooking-timer-circle {
+    width: 140px;
+    height: 140px;
+  }
+
+  .cooking-timer-time {
+    font-size: 2rem;
+  }
+
+  .quick-timers {
+    padding: var(--space-3);
+  }
+
+  .quick-timer-button {
+    font-size: var(--text-xs);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .custom-timer {
+    padding: var(--space-3);
+  }
+
+  .custom-timer-input {
+    width: 50px;
+    height: 40px;
+    font-size: var(--text-base);
+  }
+
+  .cooking-mode-navigation {
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+
+  .cooking-nav-button {
+    width: 100%;
+    min-width: auto;
+    font-size: var(--text-lg);
+    padding: var(--space-3) var(--space-6);
+  }
+
+  .cooking-keyboard-hints {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .cooking-ingredients-sidebar {
+    max-width: 100%;
+  }
+
+  .cooking-step-text {
+    font-size: 1.125rem;
+  }
+
+  .cooking-timer-circle {
+    width: 120px;
+    height: 120px;
+  }
+
+  .cooking-timer-time {
+    font-size: 1.75rem;
+  }
+
+  .quick-timers {
+    flex-wrap: wrap;
+  }
+
+  .quick-timers-label {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+
+/* ============================= */
+/* COOKING MODE BANNER           */
+/* ============================= */
+
+.cooking-mode-banner {
+  margin: var(--space-8) 0;
+  padding: 0;
+}
+
+.cooking-mode-banner-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  background: linear-gradient(135deg, var(--orange-50) 0%, var(--orange-100) 100%);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.cooking-mode-banner-icon {
+  font-size: 4rem;
+  color: var(--color-primary);
+  flex-shrink: 0;
+  animation: pulse-icon 2s infinite;
+}
+
+@keyframes pulse-icon {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.cooking-mode-banner-text {
+  flex: 1;
+}
+
+.cooking-mode-banner-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.cooking-mode-banner-description {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  margin: 0;
+}
+
+.cooking-mode-banner-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-8);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-lg);
+  color: white;
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-md);
+  flex-shrink: 0;
+}
+
+.cooking-mode-banner-button:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.cooking-mode-banner-button:active {
+  transform: translateY(-2px);
+}
+
+.cooking-mode-banner-button i {
+  font-size: var(--text-2xl);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cooking-mode-banner-content {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-4);
+    padding: var(--space-5);
+  }
+
+  .cooking-mode-banner-icon {
+    font-size: 3rem;
+  }
+
+  .cooking-mode-banner-title {
+    font-size: var(--text-xl);
+  }
+
+  .cooking-mode-banner-description {
+    font-size: var(--text-sm);
+  }
+
+  .cooking-mode-banner-button {
+    width: 100%;
+    justify-content: center;
+    font-size: var(--text-lg);
+    padding: var(--space-3) var(--space-6);
+  }
+}
+
+
+
+

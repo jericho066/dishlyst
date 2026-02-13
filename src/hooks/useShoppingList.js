@@ -1,5 +1,3 @@
-// src/hooks/useShoppingList.js
-
 import { useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { STORAGE_KEYS, TOAST_TYPES } from '../utils/constants';

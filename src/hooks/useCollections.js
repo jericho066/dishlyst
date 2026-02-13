@@ -202,12 +202,15 @@ export function useCollections(showToast, favorites = []) {
               return collection;
             }
 
+            // Always store the full recipe object if available
+            const updatedRecipes = recipeObj
+              ? [...(collection.recipes || []), recipeObj]
+              : collection.recipes || [];
+
             return {
               ...collection,
               recipeIds: [...collection.recipeIds, recipeId],
-              recipes: recipeObj
-                ? [...(collection.recipes || []), recipeObj]
-                : collection.recipes || [],
+              recipes: updatedRecipes,
               updatedAt: new Date().toISOString(),
             };
           }
@@ -235,6 +238,9 @@ export function useCollections(showToast, favorites = []) {
             return {
               ...collection,
               recipeIds: collection.recipeIds.filter((id) => id !== recipeId),
+              recipes: (collection.recipes || []).filter(
+                (recipe) => recipe.idMeal !== recipeId,
+              ),
               updatedAt: new Date().toISOString(),
             };
           }
@@ -265,13 +271,14 @@ export function useCollections(showToast, favorites = []) {
       const collection = getCollection(collectionId);
       if (!collection) return [];
 
-      // Get actual recipe objects from collection storage or favorites
-      // First try to get from collection's stored recipes, then fall back to favorites
-      return (
-        collection.recipes ||
-        favorites.filter((recipe) =>
-          collection.recipeIds.includes(recipe.idMeal),
-        )
+      // If we have stored recipe objects, return them
+      if (collection.recipes && collection.recipes.length > 0) {
+        return collection.recipes;
+      }
+
+      // Otherwise try to get from favorites (for backwards compatibility)
+      return favorites.filter((recipe) =>
+        collection.recipeIds.includes(recipe.idMeal),
       );
     },
     [getCollection, favorites],

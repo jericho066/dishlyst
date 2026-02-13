@@ -1,5 +1,3 @@
-// src/hooks/useDebounce.js
-
 import { useState, useEffect } from 'react';
 import { DEBOUNCE_DELAY } from '../utils/constants';
 
